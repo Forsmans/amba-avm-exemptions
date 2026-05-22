@@ -4,13 +4,13 @@ variable "monitoring_excluded_subscription_ids" {
   description = "Subscription IDs excluded from AMBA monitoring by creating policy exemptions for AMBA policy assignments."
 }
 
-variable "alz_root_management_group_name" {
+variable "landing_zone_management_group_name" {
   type        = string
-  description = "The name of the ALZ root management group (e.g. \"og\")."
+  description = "The name of the ALZ landing zone management group, used to identify AMBA policy assignments for exemption."
 }
 
 locals {
-  exemptions_lz_management_group_name = format("%s-landing-zones", var.alz_root_management_group_name)
+  exemptions_lz_management_group_name = var.landing_zone_management_group_name
   monitoring_excluded_not_scopes = [
     for subscription_id in var.monitoring_excluded_subscription_ids :
     format("/subscriptions/%s", subscription_id)
@@ -19,7 +19,7 @@ locals {
     for key, resource_id in module.amba_policy.policy_assignment_resource_ids :
     key => resource_id
     if strcontains(key, "/Deploy-AMBA-") && (
-      startswith(key, format("%s/", var.alz_root_management_group_name)) ||
+      startswith(key, format("%s/", local.root_management_group_name)) ||
       startswith(key, format("%s/", local.exemptions_lz_management_group_name))
     )
   }
