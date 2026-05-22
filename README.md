@@ -4,12 +4,14 @@ This repository contains a single Terraform file, exemptions.tf, that adds subsc
 
 The purpose is to keep AMBA deployed broadly while excluding selected subscriptions (typically dev/test) from AMBA policy assignments.
 
+Important: this repository is the host/source for exemptions.tf. The file is intended to be copied into the repository where you deploy AMBA, and Terraform should be run from that AMBA deployment working directory.
+
 ## What this gives you
 
 - A self-contained exemption implementation in one file.
 - Two input variables:
   - monitoring_excluded_subscription_ids
-  - alz_root_management_group_name
+  - landing_zone_management_group_name
 - No need to spread exemption logic across multiple Terraform files.
 
 ## Prerequisites
@@ -21,7 +23,7 @@ The purpose is to keep AMBA deployed broadly while excluding selected subscripti
 ## How to use
 
 1. Follow the AVM AMBA deployment guide and prepare your Terraform configuration.
-2. Copy exemptions.tf into the same Terraform working directory where your AMBA deployment files are located.
+2. Download or copy exemptions.tf from this repository into the same Terraform working directory where your AMBA deployment files are located.
 3. Provide both input variables in your .tfvars file.
 4. Run terraform plan and terraform apply as usual.
 
@@ -33,7 +35,7 @@ monitoring_excluded_subscription_ids = [
   "11111111-1111-1111-1111-111111111111"
 ]
 
-alz_root_management_group_name = "alz"
+landing_zone_management_group_name = "<your-landing-zone-mg-name>"
 ```
 
 ### Optional: download directly from GitHub
@@ -53,7 +55,8 @@ Invoke-WebRequest -Uri https://raw.githubusercontent.com/Forsmans/amba-avm-exemp
 
 ## Scope and limitations
 
-- Intended for Corp landing zone subscriptions under the og-landing-zones hierarchy.
+- This solution supports exemptions for landing zones only.
+- Exemptions targeting platform or sandbox hierarchies are out of scope.
 - Sandbox subscriptions are intentionally not targeted by this approach.
 - If AMBA module structure or naming changes, exemptions.tf may need updates.
 - If native exemption support is added to AVM AMBA (or if EPAC is adopted), this file should be re-evaluated.
