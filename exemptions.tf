@@ -4,13 +4,8 @@ variable "monitoring_excluded_subscription_ids" {
   description = "Subscription IDs excluded from AMBA monitoring by creating policy exemptions for AMBA policy assignments."
 }
 
-variable "landing_zone_management_group_name" {
-  type        = string
-  description = "The name of the ALZ landing zone management group, used to identify AMBA policy assignments for exemption."
-}
-
 locals {
-  exemptions_lz_management_group_name = var.landing_zone_management_group_name
+  exemptions_lz_management_group_name = [for mg in jsondecode(file("${path.root}/lib/custom.alz_architecture_definition.json")).management_groups : mg.id if contains(mg.archetypes, "amba_landing_zones")][0]
   monitoring_excluded_not_scopes = [
     for subscription_id in var.monitoring_excluded_subscription_ids :
     format("/subscriptions/%s", subscription_id)
