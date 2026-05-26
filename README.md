@@ -9,9 +9,9 @@ Important: this repository is the host/source for exemptions.tf. The file is int
 ## What this gives you
 
 - A self-contained exemption implementation in one file.
-- Two input variables:
+- A single input variable:
   - monitoring_excluded_subscription_ids
-  - landing_zone_management_group_name
+- The landing zone management group is resolved dynamically from your ALZ architecture definition — no manual input required.
 - No need to spread exemption logic across multiple Terraform files.
 
 ## Prerequisites
@@ -24,7 +24,7 @@ Important: this repository is the host/source for exemptions.tf. The file is int
 
 1. Follow the AVM AMBA deployment guide and prepare your Terraform configuration.
 2. Download or copy exemptions.tf from this repository into the same Terraform working directory where your AMBA deployment files are located.
-3. Provide both input variables in your .tfvars file.
+3. Provide the input variable in your .tfvars file.
 4. Run terraform plan and terraform apply as usual.
 
 ### Example tfvars
@@ -34,8 +34,6 @@ monitoring_excluded_subscription_ids = [
   "00000000-0000-0000-0000-000000000000",
   "11111111-1111-1111-1111-111111111111"
 ]
-
-landing_zone_management_group_name = "<your-landing-zone-mg-name>"
 ```
 
 ### Optional: download directly from GitHub
@@ -49,6 +47,7 @@ Invoke-WebRequest -Uri https://raw.githubusercontent.com/Forsmans/amba-avm-exemp
 ## What the file does internally
 
 - Builds subscription scopes from monitoring_excluded_subscription_ids.
+- Resolves the landing zone management group dynamically by reading your ALZ architecture definition (`lib/custom.alz_architecture_definition.json`) and finding the management group with the `amba_landing_zones` archetype.
 - Finds AMBA policy assignments under the relevant management group hierarchy.
 - Creates one Microsoft.Authorization/policyExemptions resource per assignment/subscription combination.
 - Uses stable, short resource names based on a hash.
